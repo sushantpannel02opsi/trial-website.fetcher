@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verify TikTok & Cashtag</title>
+</head>
+<body>
+
+<h2>Verify Accounts</h2>
+
+<input id="tiktok" placeholder="TikTok username (no @)" />
+<br><br>
+<input id="cashtag" placeholder="Cash App Cashtag ($username)" />
+<br><br>
+
+<button onclick="verify()">Verify</button>
+
+<p id="result"></p>
+
+<script>
+async function verify() {
+  const tiktok = document.getElementById("tiktok").value.trim();
+  const cashtag = document.getElementById("cashtag").value.trim();
+  const result = document.getElementById("result");
+
+  // Basic validation
+  if (!/^[a-zA-Z0-9._]{2,24}$/.test(tiktok)) {
+    result.innerText = "❌ Invalid TikTok format";
+    return;
+  }
+
+  if (!/^\$[a-zA-Z0-9]{1,20}$/.test(cashtag)) {
+    result.innerText = "❌ Invalid Cashtag format";
+    return;
+  }
+
+  result.innerText = "⏳ Checking...";
+
+  const res = await fetch("/api/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tiktok, cashtag })
+  });
+
+  const data = await res.json();
+
+  result.innerText =
+    `TikTok: ${data.tiktok ? "✅ Exists" : "❌ Not found"} | ` +
+    `Cash App: ${data.cashtag ? "✅ Exists" : "❌ Not found"}`;
+}
+</script>
+
+</body>
+</html>
